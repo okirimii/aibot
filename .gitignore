@@ -1,0 +1,11 @@
+# Environment
+.env
+
+# macOS-specific files
+.DS_Store
+
+# Python-generated files
+__pycache__/
+
+# Virtual environments
+.venv
