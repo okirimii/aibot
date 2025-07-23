@@ -12,10 +12,13 @@ class UsageDAO(DAOBase):
     Attributes
     ----------
     TABLE_NAME : str
-        Name of the database table for usage data.
+        Name of the database table for user limits.
+    USAGE_TRACKING_TABLE_NAME : str
+        Name of the database table for daily usage tracking.
     """
 
     TABLE_NAME: str = "user_limits"
+    USAGE_TRACKING_TABLE_NAME: str = "daily_usage"
 
     async def create_table(self) -> None:
         """Create table if it doesn't exist.
@@ -52,15 +55,14 @@ class UsageDAO(DAOBase):
         ValueError
             If the table name contains invalid characters
         """
-        table_name = "daily_usage"
-        if not self.validate_table_name(table_name):
+        if not self.validate_table_name(self.USAGE_TRACKING_TABLE_NAME):
             msg = "Invalid table name: Only alphanumeric characters and underscores are allowed."
             raise ValueError(msg)
 
         conn = await aiosqlite.connect(super().DB_NAME)
         try:
             query = f"""
-            CREATE TABLE IF NOT EXISTS {table_name} (
+            CREATE TABLE IF NOT EXISTS {self.USAGE_TRACKING_TABLE_NAME} (
                 id          INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id     INTEGER NOT NULL,
                 usage_date  DATE NOT NULL,
