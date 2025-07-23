@@ -1,7 +1,7 @@
 from google import genai
 from google.genai import types
 
-from src.aibot.models.chat import ChatHistory, ChatMessage
+from aibot.core.entities.chat import ChatHistory, ChatMessage
 
 from ._params import GeminiParams
 

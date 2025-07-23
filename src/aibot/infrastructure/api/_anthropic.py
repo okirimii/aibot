@@ -1,6 +1,6 @@
 import anthropic
 
-from src.aibot.models.chat import ChatHistory, ChatMessage
+from aibot.core.entities.chat import ChatHistory, ChatMessage
 
 from ._params import ClaudeParams
 
