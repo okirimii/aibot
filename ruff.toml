@@ -25,6 +25,7 @@ select = [ "ALL" ]
 # Ignore specific linting rules.
 ignore = [
     "D", # pydocstyle
+    "BLE001", # Allow catch all exceptions
 ]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
