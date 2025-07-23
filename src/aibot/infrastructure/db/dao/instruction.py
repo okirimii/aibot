@@ -12,7 +12,7 @@ class InstructionDAO(DAOBase):
 
     Attributes
     ----------
-    _table_name : str
+    TABLE_NAME : str
         Name of the database table for system instructions.
     """
 
