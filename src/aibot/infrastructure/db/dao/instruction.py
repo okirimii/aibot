@@ -1,0 +1,237 @@
+import datetime
+
+import aiosqlite
+
+from aibot.cli import logger
+
+from ._base import DAOBase
+
+
+class InstructionDAO(DAOBase):
+    """Data Access Object for managing system instructions.
+
+    Attributes
+    ----------
+    _table_name : str
+        Name of the database table for system instructions.
+    """
+
+    TABLE_NAME: str = "system_instruction"
+
+    async def create_table(self) -> None:
+        """Create table if it doesn't exist.
+
+        Raises
+        ------
+        ValueError
+            If the table name contains invalid characters.
+        """
+        if not self.validate_table_name(self.TABLE_NAME):
+            msg = "Invalid tablename: Only alphanumeric characters and underscores are allowed."
+            raise ValueError(msg)
+
+        conn = await aiosqlite.connect(super().DB_NAME)
+        try:
+            query = f"""
+            CREATE TABLE IF NOT EXISTS {self.TABLE_NAME} (
+                id             INTEGER PRIMARY KEY AUTOINCREMENT,
+                instruction    TEXT NOT NULL,
+                file_path      TEXT NOT NULL,
+                created_by     INTEGER NOT NULL,
+                created_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
+                activated_at   DATETIME DEFAULT NULL,
+                deactivated_at DATETIME DEFAULT NULL,
+                is_active      BOOLEAN DEFAULT FALSE
+            );
+            """
+            await conn.execute(query)
+            await conn.commit()
+        finally:
+            await conn.close()
+
+    async def activate_instruction(self, instruction_id: int) -> bool:
+        """Activate a specific instruction and deactivate all others.
+
+        Parameters
+        ----------
+        instruction_id : int
+            The ID of the instruction to activate.
+
+        Returns
+        -------
+        bool
+            True if the instruction was successfully activated, False otherwise.
+        """
+        # First, deactivate all instructions
+        await self.deactivate_all_instructions()
+
+        conn = await aiosqlite.connect(super().DB_NAME)
+        activated_at = datetime.datetime.now(super().TIMEZONE)
+        try:
+            query = """
+            UPDATE system_instruction
+            SET is_active = TRUE, activated_at = ?, deactivated_at = NULL
+            WHERE id = ?;
+            """
+            cursor = await conn.execute(
+                query,
+                (
+                    activated_at,
+                    instruction_id,
+                ),
+            )
+            await conn.commit()
+            return cursor.rowcount > 0
+        finally:
+            await conn.close()
+
+    async def deactivate_all_instructions(self) -> int:
+        """Deactivate all currently active instructions.
+
+        Returns
+        -------
+        int
+            Number of instructions that were deactivated.
+        """
+        conn = await aiosqlite.connect(super().DB_NAME)
+        deactivated_at = datetime.datetime.now(super().TIMEZONE)
+        try:
+            query = """
+            UPDATE system_instruction
+            SET is_active = FALSE, deactivated_at = ?
+            WHERE is_active = TRUE;
+            """
+            cursor = await conn.execute(query, (deactivated_at,))
+            await conn.commit()
+            return cursor.rowcount or 0
+        finally:
+            await conn.close()
+
+    async def delete_instruction_by_file_path(self, file_path: str) -> bool:
+        """Delete a system instruction by its file path.
+
+        Parameters
+        ----------
+        file_path : str
+            The file path of the instruction to delete.
+
+        Returns
+        -------
+        bool
+            True if the instruction was successfully deleted, False otherwise.
+        """
+        conn = await aiosqlite.connect(super().DB_NAME)
+        try:
+            query = """
+            DELETE FROM system_instruction
+            WHERE file_path = ?;
+            """
+            cursor = await conn.execute(query, (file_path,))
+            await conn.commit()
+            return cursor.rowcount > 0
+        finally:
+            await conn.close()
+
+    async def save_instruction(
+        self,
+        instruction: str,
+        file_path: str,
+        created_by: int,
+    ) -> int | None:
+        """Save a system instruction to the database.
+
+        Parameters
+        ----------
+        instruction : str
+            The system instruction content.
+        file_path : str
+            The path to the generated instruction file.
+        created_by : int
+            The ID of the user who created the instruction.
+        """
+        if not instruction or not instruction.strip():
+            msg = "Instruction cannot be empty."
+            logger.warning(msg)
+
+        conn = await aiosqlite.connect(super().DB_NAME)
+
+        try:
+            query = """
+            INSERT INTO system_instruction (instruction, file_path, created_by)
+            VALUES (?, ?, ?);
+            """
+            cursor = await conn.execute(
+                query,
+                (
+                    instruction.strip(),
+                    file_path,
+                    created_by,
+                ),
+            )
+            await conn.commit()
+            if cursor.lastrowid is None:
+                msg = "Failed to create instruction: no ID returned"
+                logger.error(msg)
+                return None
+            return cursor.lastrowid
+        finally:
+            await conn.close()
+
+    async def fetch_active_instruction(self) -> str | None:
+        """Fetch the instruction content from the currently active instruction.
+
+        Returns
+        -------
+        str | None
+            The instruction content if an active instruction exists with non-null
+            activated_at and is_active=True, None otherwise.
+        """
+        conn = await aiosqlite.connect(super().DB_NAME)
+        try:
+            query = """
+            SELECT instruction
+            FROM system_instruction
+            WHERE activated_at IS NOT NULL AND is_active = TRUE
+            ORDER BY activated_at DESC
+            LIMIT 1;
+            """
+            cursor = await conn.execute(query)
+            row = await cursor.fetchone()
+
+            return row[0] if row else None
+        finally:
+            await conn.close()
+
+    async def update_file_path(self, old_path: str, new_path: str) -> bool:
+        """Update the file path of a system instruction.
+
+        Parameters
+        ----------
+        old_path : str
+            The current file path to update.
+        new_path : str
+            The new file path to set.
+
+        Returns
+        -------
+        bool
+            True if the file path was successfully updated, False otherwise.
+        """
+        conn = await aiosqlite.connect(super().DB_NAME)
+        try:
+            query = """
+            UPDATE system_instruction
+            SET file_path = ?
+            WHERE file_path = ?;
+            """
+            cursor = await conn.execute(
+                query,
+                (
+                    new_path,
+                    old_path,
+                ),
+            )
+            await conn.commit()
+            return cursor.rowcount > 0
+        finally:
+            await conn.close()
