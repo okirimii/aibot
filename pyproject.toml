@@ -10,6 +10,7 @@ dependencies = [
     "discord>=2.3.2",
     "google-genai>=1.26.0",
     "openai>=1.97.1",
+    "python-dotenv>=1.1.1",
     "pytz>=2025.2",
     "pyyaml>=6.0.2",
 ]
