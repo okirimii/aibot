@@ -1,6 +1,6 @@
 from typing import Literal
 
-from aibot.cli import logger
+from src.aibot.cli import logger
 
 ProviderType = Literal["anthropic", "google", "openai"]
 

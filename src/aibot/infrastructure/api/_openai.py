@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-from aibot.core.entities.chat import ChatHistory, ChatMessage
+from src.aibot.core.entities.chat import ChatHistory, ChatMessage
 
 from ._params import GPTParams
 

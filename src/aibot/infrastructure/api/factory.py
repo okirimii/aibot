@@ -1,7 +1,7 @@
 import os
 
-from aibot.core.entities.chat import ChatMessage
 from src.aibot.cli import logger
+from src.aibot.core.entities.chat import ChatMessage
 from src.aibot.infrastructure.api._params import ClaudeParams, GeminiParams, GPTParams, ParamsUnion
 from src.aibot.services.provider import ProviderManager, ProviderType
 

@@ -6,8 +6,8 @@ from typing import TypeVar
 
 import pytz
 
-from aibot.cli import logger
-from aibot.infrastructure.db.dao.usage import UsageDAO
+from src.aibot.cli import logger
+from src.aibot.infrastructure.db.dao.usage import UsageDAO
 
 T = TypeVar("T")
 TIMEZONE = pytz.timezone(os.getenv("TIMEZONE", "Asia/Tokyo"))

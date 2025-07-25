@@ -5,7 +5,7 @@ import os
 from discord import Message as DiscordMessage
 from discord import MessageType
 
-from aibot.cli import logger
+from src.aibot.cli import logger
 
 BOT_NAME = os.environ["BOT_NAME"]
 BOT_ID = int(os.environ["BOT_ID"])

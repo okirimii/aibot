@@ -2,7 +2,7 @@ import datetime
 
 import aiosqlite
 
-from aibot.cli import logger
+from src.aibot.cli import logger
 
 from ._base import DAOBase
 
