@@ -9,13 +9,14 @@ def _basic_config(level: int) -> None:
     Path("./logs").mkdir(exist_ok=True)
 
     file_handler = logging.FileHandler(log_file)
+    stream_handler = logging.StreamHandler()
 
     logging.basicConfig(
         level=level,
         # e.g. [2025-10-17 00:12:26 - target_file:496 - DEBUG] mesage
         format="[%(asctime)s - %(name)s:%(lineno)d - %(levelname)s] %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[file_handler],  # output logs to a .log
+        handlers=[file_handler, stream_handler],
     )
 
 
