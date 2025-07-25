@@ -1,5 +1,12 @@
+# Database
+*.db
+
 # Environment
 .env
+
+# Logs
+logs/
+*.log
 
 # macOS-specific files
 .DS_Store
