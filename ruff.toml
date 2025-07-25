@@ -26,6 +26,7 @@ select = [ "ALL" ]
 ignore = [
     "D", # pydocstyle
     "BLE001", # Allow catch all exceptions
+    "TRY300", # Allow return statements in try blocks
 ]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
