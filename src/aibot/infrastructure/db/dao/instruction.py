@@ -235,3 +235,43 @@ class InstructionDAO(DAOBase):
             return cursor.rowcount > 0
         finally:
             await conn.close()
+
+    async def get_instruction_by_file_path(self, file_path: str) -> dict | None:
+        """Get instruction record by file path.
+
+        Parameters
+        ----------
+        file_path : str
+            The file path of the instruction to retrieve.
+
+        Returns
+        -------
+        dict | None
+            Dictionary containing instruction details (id, instruction, created_by, etc.)
+            or None if no instruction found with the given file path.
+        """
+        conn = await aiosqlite.connect(super().DB_NAME)
+        try:
+            query = """
+            SELECT id, instruction, file_path, created_by, created_at,
+                   activated_at, deactivated_at, is_active
+            FROM system_instruction
+            WHERE file_path = ?;
+            """
+            cursor = await conn.execute(query, (file_path,))
+            row = await cursor.fetchone()
+
+            if row:
+                return {
+                    "id": row[0],
+                    "instruction": row[1],
+                    "file_path": row[2],
+                    "created_by": row[3],
+                    "created_at": row[4],
+                    "activated_at": row[5],
+                    "deactivated_at": row[6],
+                    "is_active": row[7],
+                }
+            return None
+        finally:
+            await conn.close()
