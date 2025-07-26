@@ -1,14 +1,14 @@
-import os
-
 from discord import (
     Interaction,
     TextStyle,
+    app_commands,
 )
 from discord.ui import Modal, TextInput
 
 from src.aibot.cli import logger
 from src.aibot.core.entities.chat import ChatMessage
 from src.aibot.discord.client import BotClient
+from src.aibot.discord.utils.models import parse_models
 from src.aibot.infrastructure.api.factory import ApiFactory
 from src.aibot.services.instruction import InstructionService
 from src.aibot.services.provider import ProviderManager
@@ -18,20 +18,30 @@ client: BotClient = BotClient.get_instance()
 instruction_service = InstructionService()
 provider_manager = ProviderManager.get_instance()
 
+# Generate model choices from environment variable
+FIXME_MODEL_CHOICES = parse_models("FIXME_MODELS")
+
 
 class CodeModal(Modal):
-    """Modal for entering Python code to fix."""
+    """Modal for entering code to fix."""
 
     code_input: TextInput
 
-    def __init__(self) -> None:
-        """Initialize the code modal with AI parameters."""
-        super().__init__(title="Pythonバグ修正")
+    def __init__(self, selected_model: str | None = None) -> None:
+        """Initialize the code modal with AI parameters.
+
+        Parameters
+        ----------
+        selected_model : str | None, optional
+            User-selected model ID from command argument
+        """
+        super().__init__(title="コード修正")
+        self.selected_model = selected_model
 
         self.code_input = TextInput(
-            label="Pythonコード",
+            label="コード",
             style=TextStyle.long,
-            placeholder="Pythonコードを入力してください",
+            placeholder="修正したいコードを入力してください",
             required=True,
         )
         self.add_item(self.code_input)
@@ -49,13 +59,12 @@ class CodeModal(Modal):
         try:
             code = self.code_input.value
 
-            system_instruction = instruction_service.load_static_instruction("fixpy")
+            system_instruction = instruction_service.load_static_instruction("fixme")
 
-            # Get FIXPY_MODEL from environment, if specified
-            fixpy_model = os.getenv("FIXPY_MODEL")
-            model_params = {"model": fixpy_model} if fixpy_model else None
+            # Use user-selected model if provided, otherwise use ProviderManager default
+            model_params = {"model": self.selected_model} if self.selected_model else None
 
-            logger.debug("Using model parameters for fixpy: %s", model_params)
+            logger.debug("Using model parameters for fixme: %s", model_params)
 
             message = [ChatMessage(role="user", content=code)]
 
@@ -76,19 +85,21 @@ class CodeModal(Modal):
                     ephemeral=True,
                 )
         except Exception as err:
-            msg = f"Error processing fixpy command request: {err!s}"
+            msg = f"Error processing fixme command request: {err!s}"
             logger.exception(msg)
             await interaction.followup.send(
-                "**ERROR** - `/fixpy`コマンドの処理中にエラーが発生しました",
+                "**ERROR** - `/fixme`コマンドの処理中にエラーが発生しました",
                 ephemeral=True,
             )
 
 
-@client.tree.command(name="fixpy", description="Pythonコードのバグを特定し修正します")
-async def fixpy_command(
+@client.tree.command(name="fixme", description="コードのバグを特定し修正します")
+@app_commands.choices(model=FIXME_MODEL_CHOICES) if FIXME_MODEL_CHOICES else lambda f: f
+async def fixme_command(
     interaction: Interaction,
+    model: str | None = None,
 ) -> None:
-    """Detect and fix bugs in Python code.
+    """Detect and fix bugs in code.
 
     Parameters
     ----------
@@ -97,16 +108,16 @@ async def fixpy_command(
     """
     try:
         user = interaction.user
-        logger.info("User ( %s ) executed 'fixpy' command", user)
+        logger.info("User ( %s ) executed 'fixme' command", user)
 
         # Show the modal to input code
-        modal = CodeModal()
+        modal = CodeModal(selected_model=model)
         await interaction.response.send_modal(modal)
 
     except Exception as err:
-        msg = f"Error showing fixpy modal: {err!s}"
+        msg = f"Error showing fixme modal: {err!s}"
         logger.exception(msg)
         await interaction.response.send_message(
-            "**ERROR** - `/fixpy`コマンドの実行中にエラーが発生しました",
+            "**ERROR** - `/fixme`コマンドの実行中にエラーが発生しました",
             ephemeral=True,
         )
