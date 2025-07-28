@@ -39,7 +39,7 @@ Configure the bot using a .env file. Follow these steps:
 
 #### 4. Set Up System Instructions
 
-Configure default system instructions in resources/instructions.yml.
+Configure default system instructions in `resources/instructions.yml`.
 
 > [!IMPORTANT]
 > If you plan to run the bot in a public Discord server or for multiple users, it’s strongly recommended to review and configure the system instructions appropriately.
