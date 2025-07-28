@@ -13,43 +13,47 @@
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/okirimii/aibot.git
-   cd aibot
-   ```
+#### 1. Clone the repository
 
-2. **Install dependencies**
-   ```bash
-   # With uv
-   uv sync
+```bash
+git clone https://github.com/okirimii/aibot.git
+cd aibot
+```
 
-   # Without uv
-   pip install -r requirements.lock
-   ```
+#### 2. Install dependencies
 
-3. **Prepare the Environment File**
+```bash
+# With uv
+uv sync
 
-   Configure the bot using a .env file. Follow these steps:
+# Without uv
+pip install -r requirements.lock
+```
 
-     - Copy .env.sample and rename it to .env
-     - Edit .env and insert your actual credentials and settings
+#### 3. Prepare the Environment File
 
-4. **Set Up System Instructions**
-   Configure default system instructions in resources/system_instructions.yml.
+Configure the bot using a .env file. Follow these steps:
 
-   > [!IMPORTANT]
-   > If you plan to run the bot in a public Discord server or for multiple users, it’s strongly recommended to review and configure the system prompts appropriately.
+- Copy .env.sample and rename it to .env
+- Edit .env and insert your actual credentials and settings
 
-5. **Run the Bot**
-   ```bash
-   python -m src.aibot --log <log_level>
-   ```
+#### 4. Set Up System Instructions
 
-   > [!TIP]
-   > The `--log <log_level>` parameter is optional and allows you to set the log level.
-   > Available values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL` (case-insensitive).
-   > If not specified, the default level is `INFO`.
+Configure default system instructions in resources/system_instructions.yml.
+
+> [!IMPORTANT]
+> If you plan to run the bot in a public Discord server or for multiple users, it’s strongly recommended to review and configure the system prompts appropriately.
+
+#### 5. Run the Bot
+
+```bash
+python -m src.aibot --log <log_level>
+```
+
+> [!TIP]
+> The `--log <log_level>` parameter is optional and allows you to set the log level.
+> Available values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL` (case-insensitive).
+> If not specified, the default level is `INFO`.
 
 
 ## Slash Commands
