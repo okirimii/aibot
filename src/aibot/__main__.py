@@ -11,12 +11,16 @@ from src.aibot.cli import logger  # noqa: E402
 from src.aibot.discord.client import BotClient  # noqa: E402
 from src.aibot.discord.commands import *  # noqa: F403, E402
 from src.aibot.infrastructure.db.dao.instruction import InstructionDAO  # noqa: E402
+from src.aibot.infrastructure.db.dao.moderation import ModerationDAO  # noqa: E402
+from src.aibot.infrastructure.db.dao.permission import PermissionDAO  # noqa: E402
 from src.aibot.infrastructure.db.dao.system import SystemDAO  # noqa: E402
 from src.aibot.infrastructure.db.dao.usage import UsageDAO  # noqa: E402
 
 
 async def main() -> None:
     await InstructionDAO().create_table()
+    await ModerationDAO().create_table()
+    await PermissionDAO().create_table()
     await SystemDAO().create_table()
 
     usage_dao = UsageDAO()
