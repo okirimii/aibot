@@ -4,11 +4,13 @@ from discord import Interaction, SelectOption, TextStyle, ui
 
 from src.aibot.cli import logger
 from src.aibot.discord.client import BotClient
-from src.aibot.discord.decorators.permission import is_admin_user
+from src.aibot.discord.decorators.permission import is_admin_user, is_beta_user
 from src.aibot.services.instruction import InstructionService
+from src.aibot.services.moderation import ModerationService
 
 client = BotClient().get_instance()
 instruction_service = InstructionService()
+moderation_service = ModerationService()
 
 MAX_CHARS_PER_MESSAGE = int(os.getenv("MAX_CHARS_PER_MESSAGE", "1000"))
 
@@ -34,11 +36,27 @@ class SystemInstructionModal(ui.Modal, title="システム指示設定"):
             user = interaction.user
             logger.info("User ( %s ) is setting system instruction", user)
 
+            instruction_content = self.instruction_input.value
+
             await interaction.response.defer(ephemeral=True)
+
+            # Moderate content before processing
+            is_flagged = await moderation_service.moderate_content(
+                content=instruction_content,
+                user_id=user.id,
+                request_type="instruction",
+            )
+
+            if is_flagged:
+                await interaction.followup.send(
+                    "入力内容がコミュニティガイドラインに違反している可能性があります。",
+                    ephemeral=True,
+                )
+                return
 
             # Create and activate instruction through service layer
             result = await instruction_service.create_and_activate_instruction(
-                content=self.instruction_input.value,
+                content=instruction_content,
                 created_by=user.id,
             )
 
@@ -227,6 +245,7 @@ class SystemInstructionView(ui.View):
 
 
 @client.tree.command(name="create", description="システム指示を設定します")
+@is_beta_user()
 async def create_command(interaction: Interaction) -> None:
     """Create system instruction for chat commands."""
     try:
@@ -259,12 +278,14 @@ async def create_command(interaction: Interaction) -> None:
     name="list",
     description="利用可能なシステム指示を一覧表示します",
 )
+@is_beta_user()
 async def list_command(interaction: Interaction) -> None:
     """List available system instructions."""
     await _handle_instruction_files_interaction(interaction, "view")
 
 
 @client.tree.command(name="activate", description="過去のシステム指示を再設定します")
+@is_beta_user()
 async def activate_command(interaction: Interaction) -> None:
     """Activate a previous system instruction."""
     try:
@@ -361,6 +382,7 @@ async def unlock_command(interaction: Interaction) -> None:
 
 
 @client.tree.command(name="reset", description="システム指示をデフォルトにリセットします")
+@is_beta_user()
 async def reset_command(interaction: Interaction) -> None:
     """Reset system instruction to default instructions."""
     try:
