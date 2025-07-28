@@ -21,7 +21,7 @@ def has_daily_usage_left() -> Callable[[T], T]:
 
     async def predicate(interaction: Interaction) -> bool:
         # Admin users bypass usage limits
-        if interaction.user.id in [int(i) for i in os.getenv("ADMIN_USER_IDS", "").split(",")]:
+        if interaction.user.id in [int(i) for i in os.environ["ADMIN_USER_IDS"].split(",")]:
             return True
 
         # Check usage limits for regular users

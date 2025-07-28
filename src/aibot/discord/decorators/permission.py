@@ -10,7 +10,7 @@ T = TypeVar("T")
 
 
 def is_admin_user() -> Callable[[T], T]:
-    """Check if the user has administrative access level.
+    """Check if the user has administrative permission.
 
     Returns
     -------
@@ -20,7 +20,24 @@ def is_admin_user() -> Callable[[T], T]:
     """
 
     def predicate(interaction: Interaction) -> bool:
-        return interaction.user.id in [int(i) for i in os.getenv("ADMIN_USER_IDS", "").split(",")]
+        return interaction.user.id in [int(i) for i in os.environ["ADMIN_USER_IDS"].split(",")]
+
+    return app_commands.check(predicate)
+
+
+def is_beta_user() -> Callable[[T], T]:
+    """Check if the user has beta permission.
+
+    Returns
+    -------
+    Callable[[T], T]
+        A decorator that checks whether the user executing command is
+        listed in the table `permissions` with the permission `beta`.
+    """
+
+    async def predicate(interaction: Interaction) -> bool:
+        beta_user_ids = await PermissionDAO().fetch_user_ids_by_permission(permission="beta")
+        return interaction.user.id in beta_user_ids
 
     return app_commands.check(predicate)
 
