@@ -4,6 +4,7 @@ from src.aibot.cli import logger
 from src.aibot.core.entities.chat import ChatMessage
 from src.aibot.infrastructure.api._params import ClaudeParams, GeminiParams, GPTParams, ParamsUnion
 from src.aibot.services.provider import ProviderManager, ProviderType
+from src.aibot.services.secret_manager import SecretManagerService
 
 from ._anthropic import generate_anthropic_response
 from ._gemini import generate_gemini_response
@@ -34,6 +35,21 @@ class ApiFactory:
     def __init__(self) -> None:
         """Initialize the API factory."""
         self._provider_manager = ProviderManager.get_instance()
+
+    def _get_api_key(self, provider: str) -> str:
+        # First, check environment variables
+        env_key = os.getenv(f"{provider.upper()}_API_KEY")
+        if env_key:
+            return env_key
+
+        # If no environment variable, get from Secret Manager
+        secret_service = SecretManagerService()
+        secret_key = secret_service.get_api_key(provider)
+        if secret_key:
+            return secret_key
+
+        msg = f"No API key found for provider: {provider}"
+        raise ValueError(msg)
 
     def _detect_provider_from_model(self, model: str) -> ProviderType | None:
         """Detect provider from model name prefix.
@@ -133,6 +149,7 @@ class ApiFactory:
         elif provider == "google":
             params = GeminiParams(
                 model=actual_model,
+                max_tokens=max_tokens,
                 temperature=temperature,
                 top_p=top_p,
             )
