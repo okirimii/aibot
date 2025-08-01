@@ -75,6 +75,11 @@ python -m src.aibot --log <log_level>
         <td>Code analysis and bug fixing</td>
     </tr>
     <tr>
+        <td><code>/talk</code></td>
+        <td>All users</td>
+        <td>Create a thread for multi-turn conversation with AI</td>
+    </tr>
+    <tr>
         <td><code>/provider</code></td>
         <td>All users</td>
         <td>Switch between AI providers (OpenAI, Anthropic, Google)</td>
