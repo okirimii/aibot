@@ -33,6 +33,7 @@ TALK_MODEL_CHOICES = parse_models("TALK_MODELS")
     description="スレッドを作成し、AIとの会話を開始します",
 )
 @has_daily_usage_left()
+@app_commands.rename(user_msg="message")
 @app_commands.choices(model=TALK_MODEL_CHOICES) if TALK_MODEL_CHOICES else lambda f: f
 async def talk_command(
     interaction: Interaction,
