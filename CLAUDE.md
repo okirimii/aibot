@@ -34,6 +34,10 @@ uv add <package-name>
 uv add --group dev <package-name>
 ```
 
+## Git Configuration
+
+- The commit message template is located in `.gitnub/.gitmessage`.
+
 ## Architecture Overview
 
 ### Multi-Provider AI System
