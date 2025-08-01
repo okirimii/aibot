@@ -14,6 +14,7 @@ from .permission import (
     remove_permission_command,
 )
 from .provider import provider_command
+from .talk import talk_command
 
 __all__ = [
     "activate_command",
@@ -27,5 +28,6 @@ __all__ = [
     "provider_command",
     "remove_permission_command",
     "reset_command",
+    "talk_command",
     "unlock_command",
 ]

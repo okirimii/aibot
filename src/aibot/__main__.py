@@ -9,7 +9,8 @@ load_dotenv()
 
 from src.aibot.cli import logger  # noqa: E402
 from src.aibot.discord.client import BotClient  # noqa: E402
-from src.aibot.discord.commands import *  # noqa: F403, E402
+from src.aibot.discord.commands import *  # noqa: E402, F403,
+from src.aibot.discord.event import *  # noqa: E402, F403
 from src.aibot.infrastructure.db.dao.instruction import InstructionDAO  # noqa: E402
 from src.aibot.infrastructure.db.dao.moderation import ModerationDAO  # noqa: E402
 from src.aibot.infrastructure.db.dao.permission import PermissionDAO  # noqa: E402
