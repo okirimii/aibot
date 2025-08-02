@@ -3,6 +3,7 @@ from discord.ui import Select, View
 
 from src.aibot.cli import logger
 from src.aibot.discord.client import BotClient
+from src.aibot.discord.decorators.permission import is_admin_user
 from src.aibot.services.provider import ProviderManager, ProviderType
 
 client = BotClient().get_instance()
@@ -82,6 +83,7 @@ class ProviderSelector(Select):
 
 
 @client.tree.command(name="provider", description="AIプロバイダーを選択します")
+@is_admin_user()
 async def provider_command(interaction: Interaction) -> None:
     """Select the AI provider to use for chat commands.
 

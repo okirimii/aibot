@@ -3,6 +3,7 @@ from discord import Interaction, app_commands
 from src.aibot.cli import logger
 from src.aibot.core.entities.chat import ChatMessage
 from src.aibot.discord.client import BotClient
+from src.aibot.discord.decorators.permission import is_not_blocked_user
 from src.aibot.discord.decorators.usage import has_daily_usage_left
 from src.aibot.infrastructure.api.factory import ApiFactory
 from src.aibot.infrastructure.db.dao.usage import UsageDAO
@@ -18,6 +19,7 @@ provider_manager = ProviderManager.get_instance()
 
 
 @client.tree.command(name="chat", description="AIとシングルターンのチャットを行います")
+@is_not_blocked_user()
 @has_daily_usage_left()
 @app_commands.rename(user_msg="message")
 async def chat_command(interaction: Interaction, user_msg: str) -> None:

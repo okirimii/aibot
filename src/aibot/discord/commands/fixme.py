@@ -8,6 +8,7 @@ from discord.ui import Modal, TextInput
 from src.aibot.cli import logger
 from src.aibot.core.entities.chat import ChatMessage
 from src.aibot.discord.client import BotClient
+from src.aibot.discord.decorators.permission import is_not_blocked_user
 from src.aibot.discord.decorators.usage import has_daily_usage_left
 from src.aibot.discord.utils.models import parse_models
 from src.aibot.infrastructure.api.factory import ApiFactory
@@ -110,6 +111,7 @@ class CodeModal(Modal):
 
 
 @client.tree.command(name="fixme", description="コードのバグを特定し修正します")
+@is_not_blocked_user()
 @has_daily_usage_left()
 @app_commands.choices(model=FIXME_MODEL_CHOICES) if FIXME_MODEL_CHOICES else lambda f: f
 async def fixme_command(

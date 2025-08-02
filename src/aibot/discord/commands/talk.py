@@ -9,6 +9,7 @@ from discord import (
 from src.aibot.cli import logger
 from src.aibot.core.entities.chat import ChatMessage
 from src.aibot.discord.client import BotClient
+from src.aibot.discord.decorators.permission import is_not_blocked_user
 from src.aibot.discord.decorators.usage import has_daily_usage_left
 from src.aibot.discord.utils.models import parse_models
 from src.aibot.infrastructure.api.factory import ApiFactory
@@ -32,6 +33,7 @@ TALK_MODEL_CHOICES = parse_models("TALK_MODELS")
     name="talk",
     description="スレッドを作成し、AIとの会話を開始します",
 )
+@is_not_blocked_user()
 @has_daily_usage_left()
 @app_commands.rename(user_msg="message")
 @app_commands.choices(model=TALK_MODEL_CHOICES) if TALK_MODEL_CHOICES else lambda f: f
