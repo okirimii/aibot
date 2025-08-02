@@ -36,6 +36,11 @@ def is_beta_user() -> Callable[[T], T]:
     """
 
     async def predicate(interaction: Interaction) -> bool:
+        # Admin users bypass beta permission check
+        admin_user_ids = [int(i) for i in os.environ["ADMIN_USER_IDS"].split(",")]
+        if interaction.user.id in admin_user_ids:
+            return True
+
         beta_user_ids = await PermissionDAO().fetch_user_ids_by_permission(permission="beta")
         return interaction.user.id in beta_user_ids
 
