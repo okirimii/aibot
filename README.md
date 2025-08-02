@@ -80,9 +80,9 @@ python -m src.aibot --log <log_level>
         <td>Create a thread for multi-turn conversation with AI</td>
     </tr>
     <tr>
-        <td><code>/provider</code></td>
+        <td><code>/limit</code></td>
         <td>All users</td>
-        <td>Switch between AI providers (OpenAI, Anthropic, Google)</td>
+        <td>Check current daily usage and remaining limit</td>
     </tr>
     <tr>
         <td><code>/create</code></td>
@@ -128,5 +128,15 @@ python -m src.aibot --log <log_level>
         <td><code>/rm-pm</code></td>
         <td>Admin only</td>
         <td>Disable beta or blocked permissions from users</td>
+    </tr>
+    <tr>
+        <td><code>/set-limit</code></td>
+        <td>Admin only</td>
+        <td>Set daily usage limit for a user</td>
+    </tr>
+    <tr>
+        <td><code>/provider</code></td>
+        <td>Admin only</td>
+        <td>Switch between AI providers (OpenAI, Anthropic, Google)</td>
     </tr>
 </table>
