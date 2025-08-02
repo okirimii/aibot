@@ -8,6 +8,10 @@ from .instruction import (
     reset_command,
     unlock_command,
 )
+from .limit import (
+    limit_command,
+    set_limit_command,
+)
 from .permission import (
     add_permission_command,
     check_permission_command,
@@ -23,11 +27,13 @@ __all__ = [
     "check_permission_command",
     "create_command",
     "fixme_command",
+    "limit_command",
     "list_command",
     "lock_command",
     "provider_command",
     "remove_permission_command",
     "reset_command",
+    "set_limit_command",
     "talk_command",
     "unlock_command",
 ]
