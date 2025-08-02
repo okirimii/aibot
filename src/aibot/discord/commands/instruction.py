@@ -245,6 +245,7 @@ class SystemInstructionView(ui.View):
 
 
 @client.tree.command(name="create", description="システム指示を設定します")
+@is_admin_user()
 @is_beta_user()
 async def create_command(interaction: Interaction) -> None:
     """Create system instruction for chat commands."""
@@ -285,6 +286,7 @@ async def list_command(interaction: Interaction) -> None:
 
 
 @client.tree.command(name="activate", description="過去のシステム指示を再設定します")
+@is_admin_user()
 @is_beta_user()
 async def activate_command(interaction: Interaction) -> None:
     """Activate a previous system instruction."""
@@ -382,6 +384,7 @@ async def unlock_command(interaction: Interaction) -> None:
 
 
 @client.tree.command(name="reset", description="システム指示をデフォルトにリセットします")
+@is_admin_user()
 @is_beta_user()
 async def reset_command(interaction: Interaction) -> None:
     """Reset system instruction to default instructions."""
